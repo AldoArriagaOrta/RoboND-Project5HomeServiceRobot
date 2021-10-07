@@ -62,6 +62,7 @@ int main(int argc, char** argv){
   else
     ROS_INFO("The base failed to reach the pick-up region for some reason");
 
-
+  ros::spin();
+  
   return 0;
 }

@@ -1,83 +1,82 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
+#include <actionlib/client/simple_action_client.h>
+#include <move_base_msgs/MoveBaseActionResult.h>
 // %EndTag(INCLUDES)%
+ros::Publisher marker_pub; //make the publisher global to be accessible from the callback
+visualization_msgs::Marker marker; //make the marker global to avoid creating multiple instances to pass values
 
-// %Tag(INIT)%
+
+void get_result_callback(const move_base_msgs::MoveBaseActionResult::ConstPtr& result)
+{
+    ROS_INFO("!!");
+    if(result->status.status == actionlib_msgs::GoalStatus::SUCCEEDED)
+    {
+        if(result->header.seq == 0) //first target position reached
+        {
+            ros::Duration(5.0).sleep();
+            marker.color.a = 0.0; //set the object transparent
+            ROS_INFO("Object picked up");
+        }
+        else if(result->header.seq == 1) //second target position reached
+        {
+            ros::Duration(5.0).sleep();
+            marker.pose.position.x = 10.625;
+            marker.pose.position.y = 0.015;
+            marker.color.a = 1.0;
+            ROS_INFO("Object delivered");
+        }
+    }
+    marker_pub.publish(marker);
+}
+
+
 int main( int argc, char** argv )
 {
-  ros::init(argc, argv, "basic_shapes");
-  ros::NodeHandle n;
-  ros::Rate r(1);
-  ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+    ros::init(argc, argv, "basic_shapes");
+    ros::NodeHandle n;
+    marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 
-  // Subscribe to /simple_arm/joint_states topic to read the arm joints position inside the joint_states_callback function
-  //ros::Subscriber sub1 = n.subscribe("/move_base/status", 10, joint_states_callback);
+    uint32_t shape = visualization_msgs::Marker::SPHERE;
 
-// %EndTag(INIT)%
-
-  // Set our initial shape type to be a cube
-// %Tag(SHAPE_INIT)%
-  uint32_t shape = visualization_msgs::Marker::SPHERE;
-// %EndTag(SHAPE_INIT)%
-
-// %Tag(MARKER_INIT)%
-  while (ros::ok())
-  {
-    visualization_msgs::Marker marker;
     // Set the frame ID and timestamp.  See the TF tutorials for information on these.
     marker.header.frame_id = "map";
     marker.header.stamp = ros::Time::now();
-// %EndTag(MARKER_INIT)%
 
     // Set the namespace and id for this marker.  This serves to create a unique ID
     // Any marker sent with the same namespace and id will overwrite the old one
-// %Tag(NS_ID)%
     marker.ns = "basic_shapes";
     marker.id = 0;
-// %EndTag(NS_ID)%
 
-    // Set the marker type.  Initially this is CUBE, and cycles between that and SPHERE, ARROW, and CYLINDER
-// %Tag(TYPE)%
+    // Set the marker type. 
     marker.type = shape;
-// %EndTag(TYPE)%
 
     // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
-// %Tag(ACTION)%
     marker.action = visualization_msgs::Marker::ADD;
-// %EndTag(ACTION)%
 
     // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-// %Tag(POSE)%
-    marker.pose.position.x = 3.3;
+    marker.pose.position.x = 3.425;
     marker.pose.position.y = 3.0;
     marker.pose.position.z = 0;
     marker.pose.orientation.x = 0.0;
     marker.pose.orientation.y = 0.0;
     marker.pose.orientation.z = 0.0;
     marker.pose.orientation.w = 1.0;
-// %EndTag(POSE)%
 
     // Set the scale of the marker -- 1x1x1 here means 1m on a side
-// %Tag(SCALE)%
     marker.scale.x = 0.25;
     marker.scale.y = 0.25;
     marker.scale.z = 0.25;
-// %EndTag(SCALE)%
 
     // Set the color -- be sure to set alpha to something non-zero!
-// %Tag(COLOR)%
     marker.color.r = 0.0f;
     marker.color.g = 0.0f;
     marker.color.b = 1.0f;
     marker.color.a = 1.0;
-// %EndTag(COLOR)%
 
-// %Tag(LIFETIME)%
     marker.lifetime = ros::Duration();
-// %EndTag(LIFETIME)%
 
     // Publish the marker
-// %Tag(PUBLISH)%
     while (marker_pub.getNumSubscribers() < 1)
     {
       if (!ros::ok())
@@ -89,23 +88,11 @@ int main( int argc, char** argv )
     }
 
     marker_pub.publish(marker);
-    ros::Duration(5.0).sleep();
-    // pick-up
-    marker.color.a = 0.0;
-    marker.pose.position.x = 10.5;
-    marker.pose.position.y = 0.015;
-    marker_pub.publish(marker);
-    //drop-off
-    ros::Duration(5.0).sleep();
-    marker.color.a = 1.0;
-    marker_pub.publish(marker);
-    ros::Duration(5.0).sleep();
-    return 0;
-// %EndTag(PUBLISH)%
+    ROS_INFO("Object Ready");
 
-// %Tag(SLEEP_END)%
-    //r.sleep();
-  }
-// %EndTag(SLEEP_END)%
+
+    ros::Subscriber sub1 = n.subscribe("/move_base/result", 1, get_result_callback);
+
+    ros::spin();
+
 }
-// %EndTag(FULLTEXT)%
