@@ -6,7 +6,7 @@ We simulate the autonomous navigation for pick-up and delivery of an object in G
 
 [//]: # (Image References)
 
-[image1]: ./images/Result.GIF "Result"
+[image1]: ./images/Result.gif "Result"
 
 ## Prerequisites
 
