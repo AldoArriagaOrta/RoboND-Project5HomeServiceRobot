@@ -40,9 +40,8 @@ int main(int argc, char** argv){
     ROS_INFO("Hooray, the base reached the pick-up region");
 
     // Wait 5 sec to simulate object pick-up
-    while(!ac.waitForServer(ros::Duration(5.0))){
-      ROS_INFO("Picking up object");
-    }
+     ROS_INFO("Picking up object");
+    ros::Duration(5.0).sleep();
 
     // Define the drop off position and orientation for the robot to reach
     goal.target_pose.pose.position.x = 10.5;
