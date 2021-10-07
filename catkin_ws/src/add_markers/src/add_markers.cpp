@@ -9,6 +9,10 @@ int main( int argc, char** argv )
   ros::NodeHandle n;
   ros::Rate r(1);
   ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+
+  // Subscribe to /simple_arm/joint_states topic to read the arm joints position inside the joint_states_callback function
+  //ros::Subscriber sub1 = n.subscribe("/move_base/status", 10, joint_states_callback);
+
 // %EndTag(INIT)%
 
   // Set our initial shape type to be a cube
@@ -86,10 +90,12 @@ int main( int argc, char** argv )
 
     marker_pub.publish(marker);
     ros::Duration(5.0).sleep();
+    // pick-up
     marker.color.a = 0.0;
     marker.pose.position.x = 10.5;
     marker.pose.position.y = 0.015;
     marker_pub.publish(marker);
+    //drop-off
     ros::Duration(5.0).sleep();
     marker.color.a = 1.0;
     marker_pub.publish(marker);

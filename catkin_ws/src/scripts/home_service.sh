@@ -19,8 +19,12 @@ rosparam set /move_base/local_costmap/inflation_layer/inflation_radius 0.5
 
 sleep 5
 
-xterm  -e "cd ${path_catkin_ws} && source devel/setup.bash && roslaunch turtlebot_rviz_launchers view_navigation.launch -d (rospack find rvizConfig)/HomeService.rviz " &
+xterm  -e "cd ${path_catkin_ws} && source devel/setup.bash && rosrun rviz rviz -d $(rospack find rvizConfig)/HomeService.rviz" &
 sleep 5
 
 xterm  -e "cd ${path_catkin_ws} && source devel/setup.bash && rosrun add_markers add_markers " &
 sleep 5
+
+xterm  -e "cd ${path_catkin_ws} && source devel/setup.bash && rosrun pick_objects pick_objects " &
+sleep 5
+
