@@ -1,5 +1,7 @@
 #!/bin/sh
 
+pip install rospkg
+
 path_catkin_ws=$(dirname $(dirname $(dirname $(realpath $0 ))))
 
 echo $path_catkin_ws
