@@ -205,5 +205,8 @@ include_directories(
 # catkin_add_nosetests(test)
 
 add_executable(add_markers src/add_markers.cpp)
+add_executable(add_markers_time src/add_markers_time.cpp)
 target_link_libraries(add_markers ${catkin_LIBRARIES})
+target_link_libraries(add_markers_time ${catkin_LIBRARIES})
 add_dependencies(add_markers roscpp visualization_msgs)
+add_dependencies(add_markers_time roscpp visualization_msgs)
